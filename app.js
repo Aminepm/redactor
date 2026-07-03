@@ -130,36 +130,43 @@ async function generateText(tool) {
     resultBox.classList.add('visible');
     
     try {
-        const response = await fetch('https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct', {
+        const response = await fetch('https://router.huggingface.co/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                inputs: prompt,
-                parameters: {
-                    max_new_tokens: 500,
-                    temperature: 0.7,
-                    top_p: 0.9,
-                    return_full_text: false
-                }
+                model: 'meta-llama/Llama-3.1-8B-Instruct',
+                messages: [
+                    { role: 'user', content: prompt }
+                ],
+                max_tokens: 500,
+                temperature: 0.7,
+                top_p: 0.9
             })
         });
         
         if (!response.ok) {
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
+            let detail = '';
+            try {
+                const errData = await response.json();
+                detail = errData?.error?.message || errData?.error || JSON.stringify(errData);
+            } catch (_) {
+                detail = response.statusText;
+            }
+            throw new Error(`Error ${response.status}: ${detail}`);
         }
         
         const data = await response.json();
-        const generatedText = data[0]?.generated_text || 'No se pudo generar el texto.';
+        const generatedText = data.choices?.[0]?.message?.content || 'No se pudo generar el texto.';
         
         resultContent.textContent = generatedText.trim();
         showToast('✅ Texto generado correctamente');
         
     } catch (error) {
         console.error('Error:', error);
-        resultContent.textContent = '❌ Error al generar el texto. Verifica tu API Key y vuelve a intentarlo.';
+        resultContent.textContent = `❌ Error al generar el texto: ${error.message}`;
         showToast('❌ Error en la generación', true);
     }
 }

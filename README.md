@@ -97,7 +97,7 @@ MIT License - Siéntete libre de usar este proyecto para tus propias necesidades
 Sí, se guarda solo en tu navegador y nunca se envía a ningún servidor excepto a Hugging Face.
 
 **¿Puedo usar otro modelo de IA?**
-Actualmente está configurado para usar Meta-Llama-3-8B-Instruct, pero puedes modificar el código para usar otros modelos compatibles con Hugging Face.
+Actualmente está configurado para usar Llama-3.1-8B-Instruct a través de Hugging Face Inference Providers (endpoint `router.huggingface.co`, formato de chat compatible con OpenAI), pero puedes modificar `app.js` (campo `model`) para usar otros modelos compatibles.
 
 **¿Cómo elimino mi API Key?**
 Haz clic en el badge de estado y luego en "Eliminar".
