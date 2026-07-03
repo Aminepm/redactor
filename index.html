@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente Vilamarina - Hugging Face</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">V</div>
+            <div>Asistente Vilamarina</div>
+        </div>
+        <div class="header-badge">Hugging Face</div>
+    </header>
+
+    <main>
+        <section id="apiWidget" class="api-widget">
+            <div class="api-widget-header" onclick="toggleApiWidget()">
+                <div class="api-widget-left">
+                    <div id="apiStatusIcon"></div>
+                    <div>
+                        <div id="apiWidgetTitle" class="api-widget-title">API Key No conectada</div>
+                        <div id="apiWidgetSubtitle" class="api-widget-subtitle">Haz clic para introducir tu token de Hugging Face</div>
+                    </div>
+                </div>
+                <div id="apiChevron">›</div>
+            </div>
+            <div id="apiWidgetBody" class="api-widget-body">
+                <div class="api-widget-body-inner">
+                    <label for="apiKeyInput">Token API de Hugging Face</label>
+                    <input type="password" id="apiKeyInput" placeholder="hf_..." autocomplete="off">
+                    <p class="hint">Consigue tu token en <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener noreferrer">huggingface.co/settings/tokens</a>. Se guarda solo en tu navegador.</p>
+                    <div class="api-widget-actions">
+                        <button class="btn-connect" onclick="saveApiKey()">Conectar</button>
+                        <button class="btn-disconnect" onclick="disconnectApi()">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="page-title">
+            <h1>¿Qué quieres redactar?</h1>
+            <p>Selecciona una tarea, rellena los campos y la IA genera el texto en segundos.</p>
+        </section>
+
+        <section class="tools-grid">
+            <article class="tool-card active" onclick="selectTool('email', this)">
+                <div class="tool-icon icon-email">✉️</div>
+                <h3>Redactar email</h3>
+                <p>A proveedor, operario o equipo de seguridad.</p>
+            </article>
+            <article class="tool-card" onclick="selectTool('incidencia', this)">
+                <div class="tool-icon icon-incidencia">⚠️</div>
+                <h3>Parte de incidencia</h3>
+                <p>Registro formal de incidencias del centro.</p>
+            </article>
+            <article class="tool-card" onclick="selectTool('autorizacion', this)">
+                <div class="tool-icon icon-autorizacion">🛠️</div>
+                <h3>Autorización operario</h3>
+                <p>Permiso de acceso para trabajos.</p>
+            </article>
+            <article class="tool-card" onclick="selectTool('comunicado', this)">
+                <div class="tool-icon icon-comunicado">📣</div>
+                <h3>Comunicado interno</h3>
+                <p>Avisos y circulares para el equipo.</p>
+            </article>
+        </section>
+
+        <section id="form-email" class="form-panel visible">
+            <div class="form-header"><div>✉️</div><h2>Redactar email</h2></div>
+            <div class="field"><label>Destinatario</label><input id="email-destinatario" placeholder="Proveedor, operario, seguridad..."></div>
+            <div class="fields-row">
+                <div class="field"><label>Asunto</label><input id="email-asunto" placeholder="Asunto del email"></div>
+                <div class="field"><label>Tono</label><select id="email-tono"><option>Formal</option><option>Claro y directo</option><option>Cordial</option><option>Urgente</option></select></div>
+            </div>
+            <div class="field"><label>Contexto</label><textarea id="email-contexto" placeholder="Explica qué ha pasado o qué necesitas comunicar."></textarea></div>
+            <div class="form-actions"><button class="btn-generate" onclick="generateText('email')">Generar</button><button class="btn-clear" onclick="clearForm('email')">Limpiar</button></div>
+        </section>
+
+        <section id="form-incidencia" class="form-panel">
+            <div class="form-header"><div>⚠️</div><h2>Parte de incidencia</h2></div>
+            <div class="fields-row">
+                <div class="field"><label>Fecha</label><input id="inc-fecha" placeholder="02/07/2026"></div>
+                <div class="field"><label>Zona</label><input id="inc-zona" placeholder="Parking, acceso, muelle..."></div>
+            </div>
+            <div class="field"><label>Descripción</label><textarea id="inc-descripcion" placeholder="Describe la incidencia con detalle."></textarea></div>
+            <div class="field"><label>Acciones realizadas</label><textarea id="inc-acciones" placeholder="Qué se hizo en el momento."></textarea></div>
+            <div class="form-actions"><button class="btn-generate" onclick="generateText('incidencia')">Generar</button><button class="btn-clear" onclick="clearForm('incidencia')">Limpiar</button></div>
+        </section>
+
+        <section id="form-autorizacion" class="form-panel">
+            <div class="form-header"><div>🛠️</div><h2>Autorización de operario</h2></div>
+            <div class="fields-row">
+                <div class="field"><label>Empresa</label><input id="aut-empresa" placeholder="Nombre de la empresa"></div>
+                <div class="field"><label>Operario</label><input id="aut-operario" placeholder="Nombre y apellidos"></div>
+            </div>
+            <div class="fields-row">
+                <div class="field"><label>Trabajo a realizar</label><input id="aut-trabajo" placeholder="Mantenimiento, revisión..."></div>
+                <div class="field"><label>Fecha y horario</label><input id="aut-fecha" placeholder="03/07/2026 08:00-12:00"></div>
+            </div>
+            <div class="field"><label>Observaciones</label><textarea id="aut-obs" placeholder="Condiciones de acceso, persona de contacto, observaciones..."></textarea></div>
+            <div class="form-actions"><button class="btn-generate" onclick="generateText('autorizacion')">Generar</button><button class="btn-clear" onclick="clearForm('autorizacion')">Limpiar</button></div>
+        </section>
+
+        <section id="form-comunicado" class="form-panel">
+            <div class="form-header"><div>📣</div><h2>Comunicado interno</h2></div>
+            <div class="fields-row">
+                <div class="field"><label>Título</label><input id="com-titulo" placeholder="Título del comunicado"></div>
+                <div class="field"><label>Audiencia</label><input id="com-audiencia" placeholder="Equipo de mantenimiento, seguridad..."></div>
+            </div>
+            <div class="field"><label>Mensaje</label><textarea id="com-mensaje" placeholder="Contenido principal del comunicado."></textarea></div>
+            <div class="form-actions"><button class="btn-generate" onclick="generateText('comunicado')">Generar</button><button class="btn-clear" onclick="clearForm('comunicado')">Limpiar</button></div>
+        </section>
+
+        <section id="resultBox" class="result-box">
+            <div class="result-header">
+                <div>Texto generado</div>
+                <div class="result-actions"><button class="btn-copy" onclick="copyResult()">Copiar</button></div>
+            </div>
+            <div id="resultContent" class="result-content"></div>
+        </section>
+    </main>
+
+    <footer>
+        Asistente Vilamarina • Powered by <a href="https://huggingface.co" target="_blank" rel="noopener noreferrer">Hugging Face Inference</a>
+    </footer>
+
+    <div id="toast" class="toast"></div>
+    <script src="app.js"></script>
+</body>
+</html>
