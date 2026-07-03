@@ -591,3 +591,24 @@ select option {
   border-color: var(--text-secondary);
   transform: translateY(-2px);
 }
+
+
+/* Result Box */
+#resultBox {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  display: none;
+}
+
+#resultBox.visible {
+  display: block;
+}
+
+#resultContent {
+  color: var(--text);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
