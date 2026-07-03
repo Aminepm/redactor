@@ -58,7 +58,8 @@ header {
   font-weight: 600;
 }
 
-main {
+main 
+  padding: 1.5rem;{
   flex: 1;
   padding: 2rem;
   max-width: 1400px;
