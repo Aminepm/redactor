@@ -82,6 +82,14 @@ function selectTool(tool, element) {
     
     // Ocultar resultado
     document.getElementById('resultBox').classList.remove('visible');
+
+        // Scroll animado al formulario
+    setTimeout(() => {
+        const panel = document.getElementById(`form-${tool}`);
+        if (panel) {
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }, 100);
 }
 
 // Limpiar formulario
