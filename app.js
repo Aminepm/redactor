@@ -279,3 +279,78 @@ if (emailDestinatarioSelect) {
         }
     });
 }
+
+
+// Manejar adjuntar imagen
+let uploadedImage = null;
+
+document.getElementById('resp-imagen')?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Mostrar preview
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const img = document.getElementById('resp-preview-img');
+        img.src = event.target.result;
+        document.getElementById('resp-image-preview').style.display = 'block';
+        uploadedImage = event.target.result;
+    };
+    reader.readAsDataURL(file);
+
+    // Extraer texto con OCR de HuggingFace
+    showToast('🔎 Extrayendo texto de la imagen...');
+    try {
+        const imageBase64 = await fileToBase64(file);
+        const ocrText = await extractTextFromImage(imageBase64);
+        
+        // Poner el texto extraído en el textarea
+        const textarea = document.getElementById('resp-mensaje-original');
+        if (ocrText) {
+            textarea.value = ocrText;
+            showToast('✅ Texto extraído correctamente');
+        }
+    } catch (error) {
+        console.error('Error OCR:', error);
+        showToast('⚠️ No se pudo extraer el texto. Pégalo manualmente.', true);
+    }
+});
+
+function removeImage() {
+    document.getElementById('resp-imagen').value = '';
+    document.getElementById('resp-image-preview').style.display = 'none';
+    uploadedImage = null;
+}
+
+async function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+async function extractTextFromImage(imageBase64) {
+    if (!apiKey) {
+        throw new Error('API Key no configurada');
+    }
+
+    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/trocr-base-handwritten', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            inputs: imageBase64
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data[0]?.generated_text || '';
+}
